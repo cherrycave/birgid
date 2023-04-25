@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.8.20"
     kotlin("plugin.serialization") version "1.8.20"
+    `maven-publish`
 }
 
 group = "net.cherrycave"
@@ -27,8 +28,46 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-tasks.test {
-    useJUnitPlatform()
+tasks {
+    test {
+        useJUnitPlatform()
+    }
+
+}
+
+publishing {
+    repositories {
+        maven {
+            setUrl("https://maven.stckoverflw.net/private")
+
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_SECRET")
+            }
+        }
+    }
+    publications {
+        filterIsInstance<MavenPublication>().forEach { publication ->
+            publication.pom {
+                name.set(project.name)
+                url.set("https://github.com/CherryCave/birgid")
+
+                developers {
+                    developer {
+                        name.set("Emma Böcker")
+                        email.set("stckoverflw@gmail.com")
+                        organizationUrl.set("https://www.stckoverflw.net")
+                    }
+                }
+
+                scm {
+                    connection.set("scm:git:https://github.com/CheeryCave/birgid.git")
+                    developerConnection.set("scm:git:https://github.com/CheeryCave/birgid.git")
+                    url.set("https://github.com/CheeryCave/birgid.git")
+                }
+            }
+        }
+    }
 }
 
 kotlin {
@@ -36,3 +75,5 @@ kotlin {
 
     jvmToolchain(17)
 }
+
+
