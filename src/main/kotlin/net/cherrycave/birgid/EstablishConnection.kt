@@ -16,8 +16,9 @@ private val LOG = KotlinLogging.logger { }
 @OptIn(Internal::class, ExperimentalCoroutinesApi::class)
 public suspend fun GertrudClient.connect() {
     var retries = 0
+    var disconnect = false
 
-    while (true) {
+    while (!disconnect) {
         implementation.httpClient.webSocket(host = host, port = port, path = "/ws") {
             var lastKeepAlive = System.currentTimeMillis()
 
@@ -74,17 +75,25 @@ public suspend fun GertrudClient.connect() {
             while (this.outgoing.isClosedForSend.not()) {
                 val message = implementation.outgoing.receive()
 
-                outgoing.send(Frame.Text(Json.encodeToString(BaseMessage.serializer(), message)))
+                outgoing.send(message)
+                if (message is Frame.Close) {
+                    LOG.info { "Disconnected from CherryCave Backend" }
+                    disconnect = true
+                    break
+                }
             }
 
         }
-        if (retries >= 5) {
-            throw RuntimeException("Could not reconnect to CherryCave Backend")
+        if (!disconnect) {
+            if (retries >= 5) {
+                throw RuntimeException("Could not reconnect to CherryCave Backend")
+            }
+
+            retries++
+
+            LOG.info { "Lost connection. Reconnecting to CherryCave Backend in 5 seconds" }
+            delay(5.seconds)
         }
 
-        retries++
-
-        LOG.info { "Lost connection. Reconnecting to CherryCave Backend in 5 seconds" }
-        delay(5.seconds)
     }
 }
