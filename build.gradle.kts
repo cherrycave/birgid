@@ -47,8 +47,14 @@ publishing {
         }
     }
     publications {
-        filterIsInstance<MavenPublication>().forEach { publication ->
-            publication.pom {
+        create<MavenPublication>("maven") {
+            groupId = this.groupId
+            artifactId = project.name
+            version = this.version
+
+            from(components["java"])
+
+            pom {
                 name.set(project.name)
                 url.set("https://github.com/CherryCave/birgid")
 
