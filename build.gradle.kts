@@ -48,10 +48,6 @@ publishing {
     }
     publications {
         create<MavenPublication>("maven") {
-            groupId = this.groupId
-            artifactId = project.name
-            version = this.version
-
             from(components["java"])
 
             pom {
