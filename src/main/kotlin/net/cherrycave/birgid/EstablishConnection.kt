@@ -27,12 +27,12 @@ public suspend fun GertrudClient.connect() {
                     val message = implementation.outgoing.receive()
 
                     if (message is Frame.Text) {
-                        LOG.info("sending message ${message.readText()}")
+                        LOG.debug("sending message ${message.readText()}")
                     }
 
                     outgoing.send(message)
                     if (message is Frame.Close) {
-                        LOG.info { "Disconnected from CherryCave Backend" }
+                        LOG.debug { "Disconnected from CherryCave Backend" }
                         disconnect = true
                         break
                     }
