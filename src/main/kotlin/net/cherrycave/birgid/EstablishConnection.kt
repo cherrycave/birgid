@@ -3,10 +3,7 @@ package net.cherrycave.birgid
 import io.github.oshai.KotlinLogging
 import io.ktor.client.plugins.websocket.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.cherrycave.birgid.model.*
@@ -21,8 +18,6 @@ public suspend fun GertrudClient.connect() {
     var retries = 0
     var disconnect = false
 
-    println("connecting")
-
     while (!disconnect) {
         implementation.httpClient.webSocket(host = host, port = port, path = "/ws") {
             var lastKeepAlive = System.currentTimeMillis()
@@ -31,7 +26,9 @@ public suspend fun GertrudClient.connect() {
                 while (outgoing.isClosedForSend.not()) {
                     val message = implementation.outgoing.receive()
 
-                    println("sending message $message")
+                    if (message is Frame.Text) {
+                        LOG.info("sending message ${message.readText()}")
+                    }
 
                     outgoing.send(message)
                     if (message is Frame.Close) {
@@ -82,11 +79,13 @@ public suspend fun GertrudClient.connect() {
                 }
             }
 
-            while (this.isActive) {
+            while (isActive) {
                 delay(3.seconds)
 
                 if (System.currentTimeMillis() - lastKeepAlive > 6.seconds.inWholeMilliseconds) {
                     close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Keep Alive Timeout"))
+                    this.cancel()
+                    break
                 }
             }
 

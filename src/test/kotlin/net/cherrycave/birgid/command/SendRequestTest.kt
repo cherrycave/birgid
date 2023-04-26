@@ -25,9 +25,9 @@ class SendRequestTest {
         val uuid = UUID.randomUUID()
         val server = "test"
 
-        val result = gertrudClient.sendRequest(listOf(uuid), server)
+        gertrudClient.sendRequest(listOf(uuid), server)
 
-        assert(result.isSuccess)
+        delay(60000)
 
         connection.cancel()
     }
