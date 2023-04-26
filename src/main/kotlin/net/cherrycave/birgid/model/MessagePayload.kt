@@ -12,6 +12,10 @@ import net.cherrycave.birgid.utils.SerializableUUID
 public sealed class MessagePayload
 
 @Serializable
+@SerialName("empty")
+public object Empty : MessagePayload()
+
+@Serializable
 @SerialName("ok")
 public object GenericOk : MessagePayload()
 

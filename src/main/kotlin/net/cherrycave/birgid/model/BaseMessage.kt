@@ -18,6 +18,6 @@ public enum class MessageType {
     @SerialName("response")
     RESPONSE,
 
-    @SerialName("keep-alive")
+    @SerialName("keepAlive")
     KEEP_ALIVE,
 }

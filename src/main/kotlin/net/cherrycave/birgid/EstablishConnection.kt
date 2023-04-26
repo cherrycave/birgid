@@ -3,7 +3,10 @@ package net.cherrycave.birgid
 import io.github.oshai.KotlinLogging
 import io.ktor.client.plugins.websocket.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.cherrycave.birgid.model.*
@@ -18,25 +21,35 @@ public suspend fun GertrudClient.connect() {
     var retries = 0
     var disconnect = false
 
+    println("connecting")
+
     while (!disconnect) {
         implementation.httpClient.webSocket(host = host, port = port, path = "/ws") {
             var lastKeepAlive = System.currentTimeMillis()
 
             launch {
-                while (this.isActive) {
-                    delay(3.seconds)
+                while (outgoing.isClosedForSend.not()) {
+                    val message = implementation.outgoing.receive()
 
-                    if (System.currentTimeMillis() - lastKeepAlive > 6.seconds.inWholeMilliseconds) {
-                        close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Keep Alive Timeout"))
+                    println("sending message $message")
+
+                    outgoing.send(message)
+                    if (message is Frame.Close) {
+                        LOG.info { "Disconnected from CherryCave Backend" }
+                        disconnect = true
+                        break
                     }
                 }
+
             }
 
             launch {
                 for (frame in incoming) {
                     when (frame) {
                         is Frame.Text -> {
-                            val message: BaseMessage = Json.decodeFromString(frame.readText())
+                            val message: BaseMessage = Json.decodeFromString(
+                                frame.readText()
+                            )
 
                             when (message.messageType) {
                                 MessageType.INIT -> {
@@ -45,8 +58,9 @@ public suspend fun GertrudClient.connect() {
                                             implementation.sendRequests.send(message)
                                         }
 
+                                        is Empty -> {}
                                         is GenericError -> {}
-                                        GenericOk -> {}
+                                        is GenericOk -> {}
                                     }
                                 }
 
@@ -61,10 +75,6 @@ public suspend fun GertrudClient.connect() {
                             }
                         }
 
-                        is Frame.Close -> {
-                            close()
-                        }
-
                         else -> {
                             // Ignore
                         }
@@ -72,18 +82,16 @@ public suspend fun GertrudClient.connect() {
                 }
             }
 
-            while (this.outgoing.isClosedForSend.not()) {
-                val message = implementation.outgoing.receive()
+            while (this.isActive) {
+                delay(3.seconds)
 
-                outgoing.send(message)
-                if (message is Frame.Close) {
-                    LOG.info { "Disconnected from CherryCave Backend" }
-                    disconnect = true
-                    break
+                if (System.currentTimeMillis() - lastKeepAlive > 6.seconds.inWholeMilliseconds) {
+                    close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Keep Alive Timeout"))
                 }
             }
 
         }
+
         if (!disconnect) {
             if (retries >= 5) {
                 throw RuntimeException("Could not reconnect to CherryCave Backend")

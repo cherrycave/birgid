@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "net.cherrycave"
-version = "0.1.1"
+version = "0.1.2"
 
 repositories {
     mavenCentral()
@@ -22,7 +22,7 @@ dependencies {
 
     implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
 
-    implementation("io.github.oshai:kotlin-logging-jvm:4.0.0-beta-22")
+    api("io.github.oshai:kotlin-logging-jvm:4.0.0-beta-22")
     implementation("ch.qos.logback:logback-classic:1.4.7")
 
     testImplementation(kotlin("test"))
@@ -32,10 +32,15 @@ tasks {
     test {
         useJUnitPlatform()
     }
+}
 
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
 publishing {
+
     repositories {
         maven {
             setUrl("https://maven.stckoverflw.net/private")

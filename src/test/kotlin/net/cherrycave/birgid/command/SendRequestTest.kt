@@ -12,10 +12,10 @@ class SendRequestTest {
     @Test
     fun testSendRequest() = runBlocking {
         val gertrudClient = GertrudClient {
-            identifier = "proxy"
-            host = "localhost"
-            port = 6969
-            apiKey = "abc"
+            host = "cherrycave-backend.cap.stckoverflw.net"
+            port = 80
+            identifier = "test"
+            apiKey = "UKFo@BYKWsG#rcnYzyW^jBVkP53&etky7zan*vMr6A"
         }
 
         val connection = coroutineScope.launch {
@@ -25,7 +25,6 @@ class SendRequestTest {
         val uuid = UUID.randomUUID()
         val server = "test"
 
-        println("adawdfaw")
         val result = gertrudClient.sendRequest(listOf(uuid), server)
 
         assert(result.isSuccess)
