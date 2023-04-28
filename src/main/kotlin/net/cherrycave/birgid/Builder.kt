@@ -63,6 +63,7 @@ public class GertrudClientBuilder {
             json(Json)
         }
         defaultRequest {
+            contentType(ContentType.Application.Json)
             header(HttpHeaders.Authorization, apiKey)
             header("X-Server-Identifier", identifier)
         }
