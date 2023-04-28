@@ -3,11 +3,8 @@ package net.cherrycave.birgid
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.logging.*
-import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.*
-import kotlinx.serialization.json.Json
 import net.cherrycave.birgid.utils.Internal
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -49,16 +46,15 @@ public class GertrudClientBuilder {
      */
     public lateinit var apiKey: String
 
+    public var https: Boolean = true
+
     /**
      * Creates a new [GertrudClient] with the specified options.
      */
     @OptIn(Internal::class)
-    public fun build(): GertrudClient = GertrudClientImpl(host, port, apiKey, HttpClient {
+    public fun build(): GertrudClient = GertrudClientImpl(host, port, apiKey, https, HttpClient {
         install(Logging) {
-            this.level = LogLevel.ALL
-        }
-        install(WebSockets) {
-            contentConverter = KotlinxWebsocketSerializationConverter(Json)
+            this.level = LogLevel.INFO
         }
         defaultRequest {
             header(HttpHeaders.Authorization, apiKey)

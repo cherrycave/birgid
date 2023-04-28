@@ -11,6 +11,7 @@ public sealed interface GertrudClient {
 
     public val host: String
     public val port: Int
+    public val https: Boolean
 
     public val apiKey: String
 

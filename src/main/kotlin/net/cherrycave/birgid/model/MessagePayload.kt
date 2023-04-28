@@ -32,3 +32,5 @@ public data class SendRequest(
     val players: List<SerializableUUID>,
     val server: String
 ) : MessagePayload()
+
+
