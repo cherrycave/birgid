@@ -60,7 +60,9 @@ public class GertrudClientBuilder {
             this.level = LogLevel.INFO
         }
         install(ContentNegotiation) {
-            json(Json)
+            json(Json {
+                ignoreUnknownKeys = true
+            })
         }
         defaultRequest {
             contentType(ContentType.Application.Json)

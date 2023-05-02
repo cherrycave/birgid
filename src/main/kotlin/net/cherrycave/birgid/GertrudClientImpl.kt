@@ -12,7 +12,7 @@ public class GertrudClientImpl internal constructor(
     @PublishedApi
     internal val httpClient: HttpClient
 ) : GertrudClient {
-    internal fun buildUrl(): String {
+    public fun buildUrl(): String {
         return if (https) {
             "https://$host:$port"
         } else {
