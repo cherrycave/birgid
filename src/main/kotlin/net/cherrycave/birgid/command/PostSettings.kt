@@ -3,10 +3,14 @@ package net.cherrycave.birgid.command
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.JsonClassDiscriminator
 import net.cherrycave.birgid.GertrudClient
 import net.cherrycave.birgid.utils.Internal
 import net.cherrycave.birgid.utils.implementation
 
+@OptIn(ExperimentalSerializationApi::class)
+@JsonClassDiscriminator("settings")
 public interface Settings
 
 @OptIn(Internal::class)
