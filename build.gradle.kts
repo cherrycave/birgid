@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "net.cherrycave"
-version = "0.3.7"
+version = "0.4.0"
 
 repositories {
     mavenCentral()

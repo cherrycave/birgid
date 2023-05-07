@@ -5,7 +5,6 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import net.cherrycave.birgid.GertrudClient
-import net.cherrycave.birgid.command.ServerType
 import net.cherrycave.birgid.utils.Internal
 import net.cherrycave.birgid.utils.implementation
 
@@ -13,7 +12,7 @@ import net.cherrycave.birgid.utils.implementation
 public data class ServerRegistration(
     val register: Boolean,
     val identifier: String,
-    val serverType: ServerType,
+    val serverType: String,
     val host: String,
     val port: Int,
 )
