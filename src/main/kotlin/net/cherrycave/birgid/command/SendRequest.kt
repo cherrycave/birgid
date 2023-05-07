@@ -11,7 +11,7 @@ import net.cherrycave.birgid.utils.implementation
 
 @OptIn(Internal::class)
 public suspend fun GertrudClient.sendRequest(players: List<SerializableUUID>, server: String): Result<Unit> {
-    val result = implementation.httpClient.post(implementation.buildUrl() + "/commands/servers/sendRequest") {
+    val result = implementation.httpClient.post(implementation.buildUrl() + "/commands/servers/send") {
         setBody(SendRequest(players, server))
     }
 
