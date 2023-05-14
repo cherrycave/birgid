@@ -43,7 +43,7 @@ publishing {
 
     repositories {
         maven {
-            setUrl("https://maven.stckoverflw.net/private")
+            setUrl("https://maven.stckoverflw.net/releases")
 
             credentials {
                 username = System.getenv("MAVEN_USERNAME")
